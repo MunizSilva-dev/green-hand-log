@@ -10,33 +10,206 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CalendarioRouteImport } from './routes/calendario'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MaisRouteImport } from './routes/mais'
+import { Route as RelatoriosRouteImport } from './routes/relatorios'
+import { Route as ClientesIndexRouteImport } from './routes/clientes/index'
+import { Route as ClientesNovoRouteImport } from './routes/clientes/novo'
+import { Route as ServicosIndexRouteImport } from './routes/servicos/index'
+import { Route as ServicosNovoRouteImport } from './routes/servicos/novo'
+import { Route as ClientesIdIndexRouteImport } from './routes/clientes/$id/index'
+import { Route as ClientesIdEditarRouteImport } from './routes/clientes/$id/editar'
+import { Route as ServicosIdConcluirRouteImport } from './routes/servicos/$id/concluir'
+import { Route as ServicosIdEditarRouteImport } from './routes/servicos/$id/editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarioRoute = CalendarioRouteImport.update({
+  id: '/calendario',
+  path: '/calendario',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaisRoute = MaisRouteImport.update({
+  id: '/mais',
+  path: '/mais',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatoriosRoute = RelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesIndexRoute = ClientesIndexRouteImport.update({
+  id: '/clientes/',
+  path: '/clientes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesNovoRoute = ClientesNovoRouteImport.update({
+  id: '/clientes/novo',
+  path: '/clientes/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosIndexRoute = ServicosIndexRouteImport.update({
+  id: '/servicos/',
+  path: '/servicos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosNovoRoute = ServicosNovoRouteImport.update({
+  id: '/servicos/novo',
+  path: '/servicos/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesIdIndexRoute = ClientesIdIndexRouteImport.update({
+  id: '/clientes/$id/',
+  path: '/clientes/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesIdEditarRoute = ClientesIdEditarRouteImport.update({
+  id: '/clientes/$id/editar',
+  path: '/clientes/$id/editar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosIdConcluirRoute = ServicosIdConcluirRouteImport.update({
+  id: '/servicos/$id/concluir',
+  path: '/servicos/$id/concluir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosIdEditarRoute = ServicosIdEditarRouteImport.update({
+  id: '/servicos/$id/editar',
+  path: '/servicos/$id/editar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/login': typeof LoginRoute
+  '/mais': typeof MaisRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/clientes/novo': typeof ClientesNovoRoute
+  '/servicos/novo': typeof ServicosNovoRoute
+  '/clientes/': typeof ClientesIndexRoute
+  '/servicos/': typeof ServicosIndexRoute
+  '/clientes/$id/editar': typeof ClientesIdEditarRoute
+  '/servicos/$id/concluir': typeof ServicosIdConcluirRoute
+  '/servicos/$id/editar': typeof ServicosIdEditarRoute
+  '/clientes/$id/': typeof ClientesIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/login': typeof LoginRoute
+  '/mais': typeof MaisRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/clientes/novo': typeof ClientesNovoRoute
+  '/servicos/novo': typeof ServicosNovoRoute
+  '/clientes': typeof ClientesIndexRoute
+  '/servicos': typeof ServicosIndexRoute
+  '/clientes/$id/editar': typeof ClientesIdEditarRoute
+  '/servicos/$id/concluir': typeof ServicosIdConcluirRoute
+  '/servicos/$id/editar': typeof ServicosIdEditarRoute
+  '/clientes/$id': typeof ClientesIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/login': typeof LoginRoute
+  '/mais': typeof MaisRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/clientes/novo': typeof ClientesNovoRoute
+  '/servicos/novo': typeof ServicosNovoRoute
+  '/clientes/': typeof ClientesIndexRoute
+  '/servicos/': typeof ServicosIndexRoute
+  '/clientes/$id/editar': typeof ClientesIdEditarRoute
+  '/servicos/$id/concluir': typeof ServicosIdConcluirRoute
+  '/servicos/$id/editar': typeof ServicosIdEditarRoute
+  '/clientes/$id/': typeof ClientesIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/calendario'
+    | '/configuracoes'
+    | '/login'
+    | '/mais'
+    | '/relatorios'
+    | '/clientes/novo'
+    | '/servicos/novo'
+    | '/clientes/'
+    | '/servicos/'
+    | '/clientes/$id/editar'
+    | '/servicos/$id/concluir'
+    | '/servicos/$id/editar'
+    | '/clientes/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/calendario'
+    | '/configuracoes'
+    | '/login'
+    | '/mais'
+    | '/relatorios'
+    | '/clientes/novo'
+    | '/servicos/novo'
+    | '/clientes'
+    | '/servicos'
+    | '/clientes/$id/editar'
+    | '/servicos/$id/concluir'
+    | '/servicos/$id/editar'
+    | '/clientes/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/calendario'
+    | '/configuracoes'
+    | '/login'
+    | '/mais'
+    | '/relatorios'
+    | '/clientes/novo'
+    | '/servicos/novo'
+    | '/clientes/'
+    | '/servicos/'
+    | '/clientes/$id/editar'
+    | '/servicos/$id/concluir'
+    | '/servicos/$id/editar'
+    | '/clientes/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarioRoute: typeof CalendarioRoute
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
+  LoginRoute: typeof LoginRoute
+  MaisRoute: typeof MaisRoute
+  RelatoriosRoute: typeof RelatoriosRoute
+  ClientesNovoRoute: typeof ClientesNovoRoute
+  ServicosNovoRoute: typeof ServicosNovoRoute
+  ClientesIndexRoute: typeof ClientesIndexRoute
+  ServicosIndexRoute: typeof ServicosIndexRoute
+  ClientesIdEditarRoute: typeof ClientesIdEditarRoute
+  ServicosIdConcluirRoute: typeof ServicosIdConcluirRoute
+  ServicosIdEditarRoute: typeof ServicosIdEditarRoute
+  ClientesIdIndexRoute: typeof ClientesIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +221,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendario': {
+      id: '/calendario'
+      path: '/calendario'
+      fullPath: '/calendario'
+      preLoaderRoute: typeof CalendarioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mais': {
+      id: '/mais'
+      path: '/mais'
+      fullPath: '/mais'
+      preLoaderRoute: typeof MaisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorios': {
+      id: '/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof RelatoriosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes/': {
+      id: '/clientes/'
+      path: '/clientes'
+      fullPath: '/clientes/'
+      preLoaderRoute: typeof ClientesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes/novo': {
+      id: '/clientes/novo'
+      path: '/clientes/novo'
+      fullPath: '/clientes/novo'
+      preLoaderRoute: typeof ClientesNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/': {
+      id: '/servicos/'
+      path: '/servicos'
+      fullPath: '/servicos/'
+      preLoaderRoute: typeof ServicosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/novo': {
+      id: '/servicos/novo'
+      path: '/servicos/novo'
+      fullPath: '/servicos/novo'
+      preLoaderRoute: typeof ServicosNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes/$id/': {
+      id: '/clientes/$id/'
+      path: '/clientes/$id'
+      fullPath: '/clientes/$id/'
+      preLoaderRoute: typeof ClientesIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes/$id/editar': {
+      id: '/clientes/$id/editar'
+      path: '/clientes/$id/editar'
+      fullPath: '/clientes/$id/editar'
+      preLoaderRoute: typeof ClientesIdEditarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/$id/concluir': {
+      id: '/servicos/$id/concluir'
+      path: '/servicos/$id/concluir'
+      fullPath: '/servicos/$id/concluir'
+      preLoaderRoute: typeof ServicosIdConcluirRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/$id/editar': {
+      id: '/servicos/$id/editar'
+      path: '/servicos/$id/editar'
+      fullPath: '/servicos/$id/editar'
+      preLoaderRoute: typeof ServicosIdEditarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarioRoute: CalendarioRoute,
+  ConfiguracoesRoute: ConfiguracoesRoute,
+  LoginRoute: LoginRoute,
+  MaisRoute: MaisRoute,
+  RelatoriosRoute: RelatoriosRoute,
+  ClientesNovoRoute: ClientesNovoRoute,
+  ServicosNovoRoute: ServicosNovoRoute,
+  ClientesIndexRoute: ClientesIndexRoute,
+  ServicosIndexRoute: ServicosIndexRoute,
+  ClientesIdEditarRoute: ClientesIdEditarRoute,
+  ServicosIdConcluirRoute: ServicosIdConcluirRoute,
+  ServicosIdEditarRoute: ServicosIdEditarRoute,
+  ClientesIdIndexRoute: ClientesIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
