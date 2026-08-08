@@ -93,10 +93,10 @@ function Concluir() {
 
   function finalizar() {
     salvarServico({
-      id: servico.id,
+      id: servico!.id,
       status: "concluido",
-      inicioReal: `${servico.data}T${inicio}:00`,
-      fimReal: `${servico.data}T${fim}:00`,
+      inicioReal: `${servico!.data}T${inicio}:00`,
+      fimReal: `${servico!.data}T${fim}:00`,
       extras,
       ferramentas,
       materiais,
