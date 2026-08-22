@@ -285,6 +285,48 @@ function Concluir() {
       <Button size="lg" className="mt-6 w-full rounded-full" onClick={finalizar}>
         <Scissors className="size-4" /> Finalizar serviço
       </Button>
+
+      <Dialog
+        open={mensagem !== null}
+        onOpenChange={(aberto) => {
+          if (!aberto) {
+            setMensagem(null);
+            navigate({ to: "/servicos" });
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cobrança do cliente</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            readOnly
+            value={mensagem ?? ""}
+            className="h-64 font-mono text-xs"
+            aria-label="Mensagem de cobrança"
+          />
+          <div className="flex flex-col gap-2">
+            <Button
+              className="rounded-full"
+              onClick={() => {
+                window.open(linkWhatsapp(cliente?.whatsapp || cliente?.telefone || "", mensagem ?? ""), "_blank");
+              }}
+            >
+              <Send className="size-4" /> Enviar no WhatsApp
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => {
+                void navigator.clipboard.writeText(mensagem ?? "");
+                toast.success("Mensagem copiada");
+              }}
+            >
+              <Copy className="size-4" /> Copiar mensagem
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
