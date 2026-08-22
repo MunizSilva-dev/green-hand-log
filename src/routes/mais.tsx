@@ -19,6 +19,7 @@ export const Route = createFileRoute("/mais")({
 
 const itens = [
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { to: "/ajudantes", label: "Ajudantes", icon: Users2 },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
   { to: "/calendario", label: "Agenda completa", icon: CalendarDays },
 ] as const;
