@@ -155,6 +155,49 @@ function Concluir() {
         </div>
       </section>
 
+      <section className="mt-6 space-y-1.5">
+        <h3 className="text-sm font-semibold">Valor do serviço</h3>
+        <Label htmlFor="valor">Valor cobrado (R$)</Label>
+        <Input
+          id="valor"
+          inputMode="decimal"
+          placeholder="0,00"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+        />
+        <p className="text-xs text-muted-foreground">Total: {moeda(valorNumero)}</p>
+      </section>
+
+      <section className="mt-6 space-y-2">
+        <h3 className="text-sm font-semibold">Equipe do serviço</h3>
+        <p className="text-xs text-muted-foreground">
+          {ajudantesSel.length === 0
+            ? "Somente você realizou este serviço."
+            : `Você + ${ajudantesSel.length} ajudante(s).`}
+        </p>
+        {equipe.length === 0 ? (
+          <p className="text-xs text-muted-foreground">
+            Nenhum ajudante cadastrado — cadastre em Configurações › Equipe.
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {equipe.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => alternar(ajudantesSel, setAjudantesSel, a.id)}
+                className={cn(
+                  "rounded-full border border-border px-3 py-1.5 text-xs",
+                  ajudantesSel.includes(a.id) ? "bg-primary text-primary-foreground" : "bg-card",
+                )}
+              >
+                {a.nome}
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
       <section className="mt-6 space-y-2">
         <h3 className="text-sm font-semibold">Serviços adicionais</h3>
         <div className="flex flex-wrap gap-2">
