@@ -40,6 +40,8 @@ export type Servico = {
   status: StatusServico;
   inicioReal?: string;
   fimReal?: string;
+  valor: number; // R$
+  ajudantes: string[]; // ids de ajudantes
   extras: string[];
   materiais: Material[];
   ferramentas: string[];
@@ -48,11 +50,26 @@ export type Servico = {
   criadoEm: string;
 };
 
+export type Ajudante = {
+  id: string;
+  nome: string;
+  telefone: string;
+  observacoes: string;
+  criadoEm: string;
+};
+
 export type Usuario = { nome: string; email: string; senhaHash: string };
 
 export type Config = {
   horaNotificacao: string;
   notificacoesAtivas: boolean;
+  /** Dados do recibo / cobrança (PIX) */
+  profissionalNome: string;
+  profissionalCpf: string;
+  pixNome: string;
+  pixChave: string;
+  pixCpf: string;
+  contato: string;
 };
 
 export type Estado = {
@@ -60,6 +77,7 @@ export type Estado = {
   sessaoAtiva: boolean;
   clientes: Cliente[];
   servicos: Servico[];
+  ajudantes: Ajudante[];
   config: Config;
 };
 
