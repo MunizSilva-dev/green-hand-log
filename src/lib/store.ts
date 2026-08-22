@@ -40,6 +40,8 @@ export type Servico = {
   status: StatusServico;
   inicioReal?: string;
   fimReal?: string;
+  valor: number; // R$
+  ajudantes: string[]; // ids de ajudantes
   extras: string[];
   materiais: Material[];
   ferramentas: string[];
@@ -48,11 +50,26 @@ export type Servico = {
   criadoEm: string;
 };
 
+export type Ajudante = {
+  id: string;
+  nome: string;
+  telefone: string;
+  observacoes: string;
+  criadoEm: string;
+};
+
 export type Usuario = { nome: string; email: string; senhaHash: string };
 
 export type Config = {
   horaNotificacao: string;
   notificacoesAtivas: boolean;
+  /** Dados do recibo / cobrança (PIX) */
+  profissionalNome: string;
+  profissionalCpf: string;
+  pixNome: string;
+  pixChave: string;
+  pixCpf: string;
+  contato: string;
 };
 
 export type Estado = {
@@ -60,6 +77,7 @@ export type Estado = {
   sessaoAtiva: boolean;
   clientes: Cliente[];
   servicos: Servico[];
+  ajudantes: Ajudante[];
   config: Config;
 };
 
@@ -97,7 +115,17 @@ const inicial: Estado = {
   sessaoAtiva: false,
   clientes: [],
   servicos: [],
-  config: { horaNotificacao: "07:00", notificacoesAtivas: true },
+  ajudantes: [],
+  config: {
+    horaNotificacao: "07:00",
+    notificacoesAtivas: true,
+    profissionalNome: "",
+    profissionalCpf: "",
+    pixNome: "",
+    pixChave: "",
+    pixCpf: "",
+    contato: "",
+  },
 };
 
 let estado: Estado = inicial;
@@ -109,7 +137,15 @@ function carregar(): Estado {
   if (carregado) return estado;
   try {
     const bruto = window.localStorage.getItem(KEY);
-    if (bruto) estado = { ...inicial, ...(JSON.parse(bruto) as Estado) };
+    if (bruto) {
+      const salvo = JSON.parse(bruto) as Partial<Estado>;
+      estado = {
+        ...inicial,
+        ...salvo,
+        ajudantes: salvo.ajudantes ?? [],
+        config: { ...inicial.config, ...(salvo.config ?? {}) },
+      };
+    }
   } catch {
     estado = inicial;
   }
@@ -196,6 +232,8 @@ export function salvarServico(s: Partial<Servico> & { id?: string }) {
       fotosDepois: [],
       criadoEm: new Date().toISOString(),
       ...s,
+      valor: s.valor ?? 0,
+      ajudantes: s.ajudantes ?? [],
     };
     return { ...e, servicos: [...e.servicos, novo] };
   });
@@ -204,6 +242,27 @@ export function salvarServico(s: Partial<Servico> & { id?: string }) {
 export function excluirServico(id: string) {
   setEstado((e) => ({ ...e, servicos: e.servicos.filter((s) => s.id !== id) }));
 }
+
+// ---------- Ajudantes ----------
+export function salvarAjudante(a: Omit<Ajudante, "id" | "criadoEm"> & { id?: string }) {
+  setEstado((e) => {
+    if (a.id) {
+      return {
+        ...e,
+        ajudantes: e.ajudantes.map((x) => (x.id === a.id ? { ...x, ...a, id: a.id! } : x)),
+      };
+    }
+    const novo: Ajudante = { ...a, id: uid(), criadoEm: new Date().toISOString() };
+    return { ...e, ajudantes: [...e.ajudantes, novo] };
+  });
+}
+
+export function excluirAjudante(id: string) {
+  setEstado((e) => ({ ...e, ajudantes: e.ajudantes.filter((a) => a.id !== id) }));
+}
+
+export const moeda = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 // ---------- Backup ----------
 export function exportarDados() {

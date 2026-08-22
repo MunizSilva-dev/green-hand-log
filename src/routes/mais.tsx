@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { BarChart3, LogOut, Settings, CalendarDays } from "lucide-react";
+import { BarChart3, LogOut, Settings, CalendarDays, Users2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/mais")({
 
 const itens = [
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { to: "/ajudantes", label: "Ajudantes", icon: Users2 },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
   { to: "/calendario", label: "Agenda completa", icon: CalendarDays },
 ] as const;

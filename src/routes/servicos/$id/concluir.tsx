@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { Axe, Scissors, ShoppingCart, TreeDeciduous, Wind } from "lucide-react";
+import { Axe, Copy, Scissors, Send, ShoppingCart, TreeDeciduous, Wind } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
@@ -7,6 +7,7 @@ import { GaleriaFotos } from "@/components/GaleriaFotos";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,10 +16,12 @@ import {
   FERRAMENTAS,
   MATERIAIS,
   minutosParaTexto,
+  moeda,
   salvarServico,
   useEstado,
   type Material,
 } from "@/lib/store";
+import { linkWhatsapp, montarRecibo } from "@/lib/recibo";
 import { notificar } from "@/lib/notificacoes";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +52,7 @@ function agora() {
 
 function Concluir() {
   const { id } = useParams({ from: "/servicos/$id/concluir" });
-  const { servicos, clientes } = useEstado();
+  const { servicos, clientes, ajudantes: equipe, config } = useEstado();
   const navigate = useNavigate();
   const servico = servicos.find((s) => s.id === id);
 
@@ -63,6 +66,9 @@ function Concluir() {
   const [fotosAntes, setFotosAntes] = useState<string[]>(servico?.fotosAntes ?? []);
   const [fotosDepois, setFotosDepois] = useState<string[]>(servico?.fotosDepois ?? []);
   const [obs, setObs] = useState(servico?.observacoes ?? "");
+  const [valor, setValor] = useState(servico?.valor ? String(servico.valor) : "");
+  const [ajudantesSel, setAjudantesSel] = useState<string[]>(servico?.ajudantes ?? []);
+  const [mensagem, setMensagem] = useState<string | null>(null);
 
   if (!servico) {
     return (
@@ -91,22 +97,35 @@ function Concluir() {
     });
   }
 
+  const valorNumero = Number(valor.replace(",", ".")) || 0;
+
   function finalizar() {
-    salvarServico({
+    const atualizado = {
       id: servico!.id,
-      status: "concluido",
+      status: "concluido" as const,
       inicioReal: `${servico!.data}T${inicio}:00`,
       fimReal: `${servico!.data}T${fim}:00`,
+      valor: valorNumero,
+      ajudantes: ajudantesSel,
       extras,
       ferramentas,
       materiais,
       fotosAntes,
       fotosDepois,
       observacoes: obs,
-    });
+    };
+    salvarServico(atualizado);
     notificar("Serviço concluído", `${cliente?.nome ?? "Cliente"} · ${minutosParaTexto(minutos)}`);
     toast.success("Serviço concluído");
-    navigate({ to: "/servicos" });
+    setMensagem(
+      montarRecibo({
+        servico: { ...servico!, ...atualizado },
+        cliente,
+        config,
+        minutos,
+        ajudantes: equipe.filter((a) => ajudantesSel.includes(a.id)),
+      }),
+    );
   }
 
   return (
@@ -134,6 +153,49 @@ function Concluir() {
             {minutosParaTexto(minutos)}
           </div>
         </div>
+      </section>
+
+      <section className="mt-6 space-y-1.5">
+        <h3 className="text-sm font-semibold">Valor do serviço</h3>
+        <Label htmlFor="valor">Valor cobrado (R$)</Label>
+        <Input
+          id="valor"
+          inputMode="decimal"
+          placeholder="0,00"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+        />
+        <p className="text-xs text-muted-foreground">Total: {moeda(valorNumero)}</p>
+      </section>
+
+      <section className="mt-6 space-y-2">
+        <h3 className="text-sm font-semibold">Equipe do serviço</h3>
+        <p className="text-xs text-muted-foreground">
+          {ajudantesSel.length === 0
+            ? "Somente você realizou este serviço."
+            : `Você + ${ajudantesSel.length} ajudante(s).`}
+        </p>
+        {equipe.length === 0 ? (
+          <p className="text-xs text-muted-foreground">
+            Nenhum ajudante cadastrado — cadastre em Configurações › Equipe.
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {equipe.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => alternar(ajudantesSel, setAjudantesSel, a.id)}
+                className={cn(
+                  "rounded-full border border-border px-3 py-1.5 text-xs",
+                  ajudantesSel.includes(a.id) ? "bg-primary text-primary-foreground" : "bg-card",
+                )}
+              >
+                {a.nome}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mt-6 space-y-2">
@@ -223,6 +285,48 @@ function Concluir() {
       <Button size="lg" className="mt-6 w-full rounded-full" onClick={finalizar}>
         <Scissors className="size-4" /> Finalizar serviço
       </Button>
+
+      <Dialog
+        open={mensagem !== null}
+        onOpenChange={(aberto) => {
+          if (!aberto) {
+            setMensagem(null);
+            navigate({ to: "/servicos" });
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cobrança do cliente</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            readOnly
+            value={mensagem ?? ""}
+            className="h-64 font-mono text-xs"
+            aria-label="Mensagem de cobrança"
+          />
+          <div className="flex flex-col gap-2">
+            <Button
+              className="rounded-full"
+              onClick={() => {
+                window.open(linkWhatsapp(cliente?.whatsapp || cliente?.telefone || "", mensagem ?? ""), "_blank");
+              }}
+            >
+              <Send className="size-4" /> Enviar no WhatsApp
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => {
+                void navigator.clipboard.writeText(mensagem ?? "");
+                toast.success("Mensagem copiada");
+              }}
+            >
+              <Copy className="size-4" /> Copiar mensagem
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
