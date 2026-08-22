@@ -243,6 +243,27 @@ export function excluirServico(id: string) {
   setEstado((e) => ({ ...e, servicos: e.servicos.filter((s) => s.id !== id) }));
 }
 
+// ---------- Ajudantes ----------
+export function salvarAjudante(a: Omit<Ajudante, "id" | "criadoEm"> & { id?: string }) {
+  setEstado((e) => {
+    if (a.id) {
+      return {
+        ...e,
+        ajudantes: e.ajudantes.map((x) => (x.id === a.id ? { ...x, ...a, id: a.id! } : x)),
+      };
+    }
+    const novo: Ajudante = { ...a, id: uid(), criadoEm: new Date().toISOString() };
+    return { ...e, ajudantes: [...e.ajudantes, novo] };
+  });
+}
+
+export function excluirAjudante(id: string) {
+  setEstado((e) => ({ ...e, ajudantes: e.ajudantes.filter((a) => a.id !== id) }));
+}
+
+export const moeda = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
 // ---------- Backup ----------
 export function exportarDados() {
   return JSON.stringify(carregar(), null, 2);
