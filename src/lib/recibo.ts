@@ -9,7 +9,7 @@ export function montarRecibo({
   ajudantes,
 }: {
   servico: Servico;
-  cliente?: Cliente;
+  cliente?: Cliente | undefined;
   config: Config;
   minutos: number;
   ajudantes: Ajudante[];
