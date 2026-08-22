@@ -29,7 +29,10 @@ function Ajudantes() {
   const [observacoes, setObservacoes] = useState("");
 
   function adicionar() {
-    if (!nome.trim()) return toast.error("Informe o nome do ajudante");
+    if (!nome.trim()) {
+      toast.error("Informe o nome do ajudante");
+      return;
+    }
     salvarAjudante({ nome: nome.trim(), telefone, observacoes });
     setNome("");
     setTelefone("");
