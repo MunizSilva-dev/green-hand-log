@@ -137,7 +137,15 @@ function carregar(): Estado {
   if (carregado) return estado;
   try {
     const bruto = window.localStorage.getItem(KEY);
-    if (bruto) estado = { ...inicial, ...(JSON.parse(bruto) as Estado) };
+    if (bruto) {
+      const salvo = JSON.parse(bruto) as Partial<Estado>;
+      estado = {
+        ...inicial,
+        ...salvo,
+        ajudantes: salvo.ajudantes ?? [],
+        config: { ...inicial.config, ...(salvo.config ?? {}) },
+      };
+    }
   } catch {
     estado = inicial;
   }
