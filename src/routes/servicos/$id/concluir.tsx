@@ -97,22 +97,35 @@ function Concluir() {
     });
   }
 
+  const valorNumero = Number(valor.replace(",", ".")) || 0;
+
   function finalizar() {
-    salvarServico({
+    const atualizado = {
       id: servico!.id,
-      status: "concluido",
+      status: "concluido" as const,
       inicioReal: `${servico!.data}T${inicio}:00`,
       fimReal: `${servico!.data}T${fim}:00`,
+      valor: valorNumero,
+      ajudantes: ajudantesSel,
       extras,
       ferramentas,
       materiais,
       fotosAntes,
       fotosDepois,
       observacoes: obs,
-    });
+    };
+    salvarServico(atualizado);
     notificar("Serviço concluído", `${cliente?.nome ?? "Cliente"} · ${minutosParaTexto(minutos)}`);
     toast.success("Serviço concluído");
-    navigate({ to: "/servicos" });
+    setMensagem(
+      montarRecibo({
+        servico: { ...servico!, ...atualizado },
+        cliente,
+        config,
+        minutos,
+        ajudantes: equipe.filter((a) => ajudantesSel.includes(a.id)),
+      }),
+    );
   }
 
   return (
