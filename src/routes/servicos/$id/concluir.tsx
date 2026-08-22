@@ -66,6 +66,9 @@ function Concluir() {
   const [fotosAntes, setFotosAntes] = useState<string[]>(servico?.fotosAntes ?? []);
   const [fotosDepois, setFotosDepois] = useState<string[]>(servico?.fotosDepois ?? []);
   const [obs, setObs] = useState(servico?.observacoes ?? "");
+  const [valor, setValor] = useState(servico?.valor ? String(servico.valor) : "");
+  const [ajudantesSel, setAjudantesSel] = useState<string[]>(servico?.ajudantes ?? []);
+  const [mensagem, setMensagem] = useState<string | null>(null);
 
   if (!servico) {
     return (
