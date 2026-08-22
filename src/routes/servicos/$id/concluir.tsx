@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { Axe, Scissors, ShoppingCart, TreeDeciduous, Wind } from "lucide-react";
+import { Axe, Copy, Scissors, Send, ShoppingCart, TreeDeciduous, Wind } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
@@ -7,6 +7,7 @@ import { GaleriaFotos } from "@/components/GaleriaFotos";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,10 +16,12 @@ import {
   FERRAMENTAS,
   MATERIAIS,
   minutosParaTexto,
+  moeda,
   salvarServico,
   useEstado,
   type Material,
 } from "@/lib/store";
+import { linkWhatsapp, montarRecibo } from "@/lib/recibo";
 import { notificar } from "@/lib/notificacoes";
 import { cn } from "@/lib/utils";
 
