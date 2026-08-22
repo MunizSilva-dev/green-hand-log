@@ -115,7 +115,17 @@ const inicial: Estado = {
   sessaoAtiva: false,
   clientes: [],
   servicos: [],
-  config: { horaNotificacao: "07:00", notificacoesAtivas: true },
+  ajudantes: [],
+  config: {
+    horaNotificacao: "07:00",
+    notificacoesAtivas: true,
+    profissionalNome: "",
+    profissionalCpf: "",
+    pixNome: "",
+    pixChave: "",
+    pixCpf: "",
+    contato: "",
+  },
 };
 
 let estado: Estado = inicial;
