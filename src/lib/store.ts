@@ -224,6 +224,8 @@ export function salvarServico(s: Partial<Servico> & { id?: string }) {
       fotosDepois: [],
       criadoEm: new Date().toISOString(),
       ...s,
+      valor: s.valor ?? 0,
+      ajudantes: s.ajudantes ?? [],
     };
     return { ...e, servicos: [...e.servicos, novo] };
   });
