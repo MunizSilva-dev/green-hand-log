@@ -52,7 +52,7 @@ function agora() {
 
 function Concluir() {
   const { id } = useParams({ from: "/servicos/$id/concluir" });
-  const { servicos, clientes } = useEstado();
+  const { servicos, clientes, ajudantes: equipe, config } = useEstado();
   const navigate = useNavigate();
   const servico = servicos.find((s) => s.id === id);
 
