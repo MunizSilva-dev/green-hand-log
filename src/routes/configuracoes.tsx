@@ -82,6 +82,44 @@ function Configuracoes() {
         </Card>
 
         <Card className="gap-3 p-4 shadow-card">
+          <h3 className="text-sm font-semibold">Recibo e PIX</h3>
+          <p className="text-xs text-muted-foreground">
+            Esses dados aparecem na mensagem de cobrança enviada ao cliente ao concluir o serviço.
+          </p>
+          {(
+            [
+              ["profissionalNome", "Nome do profissional"],
+              ["profissionalCpf", "CPF do profissional"],
+              ["pixNome", "Nome da chave PIX"],
+              ["pixChave", "Chave PIX (número, e-mail...)"],
+              ["pixCpf", "CPF do PIX"],
+              ["contato", "Contato (WhatsApp)"],
+            ] as const
+          ).map(([campo, rotulo]) => (
+            <div key={campo} className="space-y-1.5">
+              <Label htmlFor={campo}>{rotulo}</Label>
+              <Input
+                id={campo}
+                value={config[campo]}
+                onChange={(e) =>
+                  setEstado((s) => ({ ...s, config: { ...s.config, [campo]: e.target.value } }))
+                }
+              />
+            </div>
+          ))}
+        </Card>
+
+        <Card className="gap-3 p-4 shadow-card">
+          <h3 className="text-sm font-semibold">Equipe</h3>
+          <p className="text-xs text-muted-foreground">
+            Cadastre os ajudantes que podem participar dos serviços.
+          </p>
+          <Button asChild variant="secondary" className="rounded-full">
+            <Link to="/ajudantes">Gerenciar ajudantes</Link>
+          </Button>
+        </Card>
+
+        <Card className="gap-3 p-4 shadow-card">
           <h3 className="text-sm font-semibold">Backup e sincronização</h3>
           <p className="text-xs text-muted-foreground">
             Seus dados ficam salvos no próprio aparelho. Exporte um backup com frequência; a
