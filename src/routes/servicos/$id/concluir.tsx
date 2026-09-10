@@ -353,14 +353,26 @@ function Concluir() {
           <DialogHeader>
             <DialogTitle>Cobrança do cliente</DialogTitle>
           </DialogHeader>
+          <p className="text-xs text-muted-foreground">
+            O PDF da cobrança já foi baixado no seu aparelho.
+          </p>
           <Textarea
             readOnly
             value={mensagem ?? ""}
-            className="h-64 font-mono text-xs"
+            className="h-48 font-mono text-xs"
             aria-label="Mensagem de cobrança"
           />
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <Button
+              className="rounded-full"
+              onClick={() => {
+                if (servicoFinal) gerarCobrancaPdf({ servico: servicoFinal, cliente, config });
+              }}
+            >
+              <FileDown className="size-4" /> Baixar PDF novamente
+            </Button>
+            <Button
+              variant="secondary"
               className="rounded-full"
               onClick={() => {
                 window.open(linkWhatsapp(cliente?.whatsapp || cliente?.telefone || "", mensagem ?? ""), "_blank");
