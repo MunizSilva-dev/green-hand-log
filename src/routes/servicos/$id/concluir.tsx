@@ -70,7 +70,9 @@ function Concluir() {
   const [obs, setObs] = useState(servico?.observacoes ?? "");
   const [valor, setValor] = useState(servico?.valor ? String(servico.valor) : "");
   const [ajudantesSel, setAjudantesSel] = useState<string[]>(servico?.ajudantes ?? []);
+  const [despesas, setDespesas] = useState<Despesa[]>(servico?.despesas ?? []);
   const [mensagem, setMensagem] = useState<string | null>(null);
+  const [servicoFinal, setServicoFinal] = useState<Servico | null>(null);
 
   if (!servico) {
     return (
@@ -109,6 +111,7 @@ function Concluir() {
       fimReal: `${servico!.data}T${fim}:00`,
       valor: valorNumero,
       ajudantes: ajudantesSel,
+      despesas: despesas.filter((d) => d.descricao || d.valor),
       extras,
       ferramentas,
       materiais,
@@ -119,15 +122,10 @@ function Concluir() {
     salvarServico(atualizado);
     notificar("Serviço concluído", `${cliente?.nome ?? "Cliente"} · ${minutosParaTexto(minutos)}`);
     toast.success("Serviço concluído");
-    setMensagem(
-      montarRecibo({
-        servico: { ...servico!, ...atualizado },
-        cliente,
-        config,
-        minutos,
-        ajudantes: equipe.filter((a) => ajudantesSel.includes(a.id)),
-      }),
-    );
+    const completo = { ...servico!, ...atualizado } as Servico;
+    setServicoFinal(completo);
+    setMensagem(montarRecibo({ servico: completo, cliente, config }));
+    gerarCobrancaPdf({ servico: completo, cliente, config });
   }
 
   return (
