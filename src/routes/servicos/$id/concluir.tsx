@@ -271,7 +271,7 @@ function Concluir() {
         </div>
       </section>
 
-      <section className="mt-6 space-y-2">
+      <section className="mt-10 space-y-2">
         <h3 className="text-sm font-semibold">Materiais utilizados</h3>
         {MATERIAIS.map((m) => {
           const marcado = materiais.some((x) => x.nome === m);
@@ -293,7 +293,7 @@ function Concluir() {
         })}
       </section>
 
-      <section className="mt-6 space-y-2">
+      <section className="mt-10 space-y-2">
         <h3 className="text-sm font-semibold">Ferramentas utilizadas</h3>
         <div className="grid grid-cols-3 gap-2">
           {FERRAMENTAS.map((f) => {
@@ -317,7 +317,7 @@ function Concluir() {
         </div>
       </section>
 
-      <section className="mt-6 space-y-4">
+      <section className="mt-10 space-y-4">
         <GaleriaFotos label="Fotos antes" fotos={fotosAntes} onChange={setFotosAntes} />
         <GaleriaFotos label="Fotos depois" fotos={fotosDepois} onChange={setFotosDepois} />
         {fotosAntes[0] && fotosDepois[0] && (
@@ -331,12 +331,12 @@ function Concluir() {
         )}
       </section>
 
-      <section className="mt-6 space-y-1.5">
+      <section className="mt-10 space-y-1.5">
         <Label htmlFor="obs">Observações</Label>
         <Textarea id="obs" value={obs} onChange={(e) => setObs(e.target.value)} />
       </section>
 
-      <Button size="lg" className="mt-6 w-full rounded-full" onClick={finalizar}>
+      <Button size="lg" className="mt-10 w-full rounded-full" onClick={finalizar}>
         <Scissors className="size-4" /> Finalizar serviço
       </Button>
 
