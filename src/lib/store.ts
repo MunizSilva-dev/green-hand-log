@@ -27,6 +27,8 @@ export type Cliente = {
 
 export type Material = { nome: string; quantidade: string };
 
+export type Despesa = { descricao: string; valor: number };
+
 export type Servico = {
   id: string;
   clienteId: string;
@@ -41,6 +43,7 @@ export type Servico = {
   inicioReal?: string;
   fimReal?: string;
   valor: number; // R$
+  despesas: Despesa[];
   ajudantes: string[]; // ids de ajudantes
   extras: string[];
   materiais: Material[];
@@ -60,6 +63,10 @@ export type Ajudante = {
 
 export type Usuario = { nome: string; email: string; senhaHash: string };
 
+export type PixTipo = "CPF" | "CNPJ" | "EMAIL" | "TELEFONE" | "ALEATORIA";
+
+export const PIX_TIPOS: PixTipo[] = ["CPF", "CNPJ", "EMAIL", "TELEFONE", "ALEATORIA"];
+
 export type Config = {
   horaNotificacao: string;
   notificacoesAtivas: boolean;
@@ -67,9 +74,11 @@ export type Config = {
   profissionalNome: string;
   profissionalCpf: string;
   pixNome: string;
+  pixTipo: PixTipo;
   pixChave: string;
   pixCpf: string;
   contato: string;
+  cookiesAceitos: boolean;
 };
 
 export type Estado = {
