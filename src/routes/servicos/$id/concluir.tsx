@@ -21,6 +21,7 @@ import {
   useEstado,
   type Despesa,
   type Material,
+  type Servico,
 } from "@/lib/store";
 import { linkWhatsapp, montarRecibo } from "@/lib/recibo";
 import { gerarCobrancaPdf } from "@/lib/pdf";
