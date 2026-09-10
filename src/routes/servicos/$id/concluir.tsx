@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { Axe, Copy, Scissors, Send, ShoppingCart, TreeDeciduous, Wind } from "lucide-react";
+import { Axe, Copy, FileDown, Plus, Scissors, Send, ShoppingCart, Trash2, TreeDeciduous, Wind } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
@@ -19,9 +19,11 @@ import {
   moeda,
   salvarServico,
   useEstado,
+  type Despesa,
   type Material,
 } from "@/lib/store";
 import { linkWhatsapp, montarRecibo } from "@/lib/recibo";
+import { gerarCobrancaPdf } from "@/lib/pdf";
 import { notificar } from "@/lib/notificacoes";
 import { cn } from "@/lib/utils";
 
