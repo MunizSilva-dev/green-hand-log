@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { Axe, Copy, Scissors, Send, ShoppingCart, TreeDeciduous, Wind } from "lucide-react";
+import { Axe, Copy, FileDown, Plus, Scissors, Send, ShoppingCart, Trash2, TreeDeciduous, Wind } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
@@ -19,9 +19,12 @@ import {
   moeda,
   salvarServico,
   useEstado,
+  type Despesa,
   type Material,
+  type Servico,
 } from "@/lib/store";
 import { linkWhatsapp, montarRecibo } from "@/lib/recibo";
+import { gerarCobrancaPdf } from "@/lib/pdf";
 import { notificar } from "@/lib/notificacoes";
 import { cn } from "@/lib/utils";
 
@@ -68,7 +71,9 @@ function Concluir() {
   const [obs, setObs] = useState(servico?.observacoes ?? "");
   const [valor, setValor] = useState(servico?.valor ? String(servico.valor) : "");
   const [ajudantesSel, setAjudantesSel] = useState<string[]>(servico?.ajudantes ?? []);
+  const [despesas, setDespesas] = useState<Despesa[]>(servico?.despesas ?? []);
   const [mensagem, setMensagem] = useState<string | null>(null);
+  const [servicoFinal, setServicoFinal] = useState<Servico | null>(null);
 
   if (!servico) {
     return (
@@ -107,6 +112,7 @@ function Concluir() {
       fimReal: `${servico!.data}T${fim}:00`,
       valor: valorNumero,
       ajudantes: ajudantesSel,
+      despesas: despesas.filter((d) => d.descricao || d.valor),
       extras,
       ferramentas,
       materiais,
@@ -117,15 +123,10 @@ function Concluir() {
     salvarServico(atualizado);
     notificar("Serviço concluído", `${cliente?.nome ?? "Cliente"} · ${minutosParaTexto(minutos)}`);
     toast.success("Serviço concluído");
-    setMensagem(
-      montarRecibo({
-        servico: { ...servico!, ...atualizado },
-        cliente,
-        config,
-        minutos,
-        ajudantes: equipe.filter((a) => ajudantesSel.includes(a.id)),
-      }),
-    );
+    const completo = { ...servico!, ...atualizado } as Servico;
+    setServicoFinal(completo);
+    setMensagem(montarRecibo({ servico: completo, cliente, config }));
+    gerarCobrancaPdf({ servico: completo, cliente, config });
   }
 
   return (
@@ -168,26 +169,79 @@ function Concluir() {
         <p className="text-xs text-muted-foreground">Total: {moeda(valorNumero)}</p>
       </section>
 
-      <section className="mt-6 space-y-2">
-        <h3 className="text-sm font-semibold">Equipe do serviço</h3>
-        <p className="text-xs text-muted-foreground">
-          {ajudantesSel.length === 0
-            ? "Somente você realizou este serviço."
-            : `Você + ${ajudantesSel.length} ajudante(s).`}
-        </p>
+      <section className="mt-10 space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-sm font-semibold">Despesas do serviço</h3>
+          <p className="text-xs text-muted-foreground">
+            Combustível, produtos ou qualquer custo. Entra no relatório em PDF.
+          </p>
+        </div>
+        <div className="space-y-3">
+          {despesas.map((d, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Input
+                placeholder="Descrição"
+                value={d.descricao}
+                onChange={(e) =>
+                  setDespesas((p) => p.map((x, j) => (j === i ? { ...x, descricao: e.target.value } : x)))
+                }
+              />
+              <Input
+                className="w-28"
+                inputMode="decimal"
+                placeholder="0,00"
+                value={d.valor ? String(d.valor) : ""}
+                onChange={(e) =>
+                  setDespesas((p) =>
+                    p.map((x, j) =>
+                      j === i ? { ...x, valor: Number(e.target.value.replace(",", ".")) || 0 } : x,
+                    ),
+                  )
+                }
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
+                aria-label="Remover despesa"
+                onClick={() => setDespesas((p) => p.filter((_, j) => j !== i))}
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <Button
+          variant="outline"
+          className="rounded-full"
+          onClick={() => setDespesas((p) => [...p, { descricao: "", valor: 0 }])}
+        >
+          <Plus className="size-4" /> Adicionar despesa
+        </Button>
+      </section>
+
+      <section className="mt-10 space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-sm font-semibold">Equipe do serviço</h3>
+          <p className="text-xs text-muted-foreground">
+            {ajudantesSel.length === 0
+              ? "Somente você realizou este serviço."
+              : `Você + ${ajudantesSel.length} ajudante(s).`}
+          </p>
+        </div>
         {equipe.length === 0 ? (
           <p className="text-xs text-muted-foreground">
             Nenhum ajudante cadastrado — cadastre em Configurações › Equipe.
           </p>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {equipe.map((a) => (
               <button
                 key={a.id}
                 type="button"
                 onClick={() => alternar(ajudantesSel, setAjudantesSel, a.id)}
                 className={cn(
-                  "rounded-full border border-border px-3 py-1.5 text-xs",
+                  "rounded-full border border-border px-4 py-2 text-xs",
                   ajudantesSel.includes(a.id) ? "bg-primary text-primary-foreground" : "bg-card",
                 )}
               >
@@ -198,7 +252,7 @@ function Concluir() {
         )}
       </section>
 
-      <section className="mt-6 space-y-2">
+      <section className="mt-10 space-y-2">
         <h3 className="text-sm font-semibold">Serviços adicionais</h3>
         <div className="flex flex-wrap gap-2">
           {EXTRAS.map((e) => (
@@ -217,7 +271,7 @@ function Concluir() {
         </div>
       </section>
 
-      <section className="mt-6 space-y-2">
+      <section className="mt-10 space-y-2">
         <h3 className="text-sm font-semibold">Materiais utilizados</h3>
         {MATERIAIS.map((m) => {
           const marcado = materiais.some((x) => x.nome === m);
@@ -239,7 +293,7 @@ function Concluir() {
         })}
       </section>
 
-      <section className="mt-6 space-y-2">
+      <section className="mt-10 space-y-2">
         <h3 className="text-sm font-semibold">Ferramentas utilizadas</h3>
         <div className="grid grid-cols-3 gap-2">
           {FERRAMENTAS.map((f) => {
@@ -263,7 +317,7 @@ function Concluir() {
         </div>
       </section>
 
-      <section className="mt-6 space-y-4">
+      <section className="mt-10 space-y-4">
         <GaleriaFotos label="Fotos antes" fotos={fotosAntes} onChange={setFotosAntes} />
         <GaleriaFotos label="Fotos depois" fotos={fotosDepois} onChange={setFotosDepois} />
         {fotosAntes[0] && fotosDepois[0] && (
@@ -277,12 +331,12 @@ function Concluir() {
         )}
       </section>
 
-      <section className="mt-6 space-y-1.5">
+      <section className="mt-10 space-y-1.5">
         <Label htmlFor="obs">Observações</Label>
         <Textarea id="obs" value={obs} onChange={(e) => setObs(e.target.value)} />
       </section>
 
-      <Button size="lg" className="mt-6 w-full rounded-full" onClick={finalizar}>
+      <Button size="lg" className="mt-10 w-full rounded-full" onClick={finalizar}>
         <Scissors className="size-4" /> Finalizar serviço
       </Button>
 
@@ -299,14 +353,26 @@ function Concluir() {
           <DialogHeader>
             <DialogTitle>Cobrança do cliente</DialogTitle>
           </DialogHeader>
+          <p className="text-xs text-muted-foreground">
+            O PDF da cobrança já foi baixado no seu aparelho.
+          </p>
           <Textarea
             readOnly
             value={mensagem ?? ""}
-            className="h-64 font-mono text-xs"
+            className="h-48 font-mono text-xs"
             aria-label="Mensagem de cobrança"
           />
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <Button
+              className="rounded-full"
+              onClick={() => {
+                if (servicoFinal) gerarCobrancaPdf({ servico: servicoFinal, cliente, config });
+              }}
+            >
+              <FileDown className="size-4" /> Baixar PDF novamente
+            </Button>
+            <Button
+              variant="secondary"
               className="rounded-full"
               onClick={() => {
                 window.open(linkWhatsapp(cliente?.whatsapp || cliente?.telefone || "", mensagem ?? ""), "_blank");

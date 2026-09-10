@@ -90,10 +90,7 @@ function Configuracoes() {
             [
               ["profissionalNome", "Nome do profissional"],
               ["profissionalCpf", "CPF do profissional"],
-              ["pixNome", "Nome da chave PIX"],
-              ["pixChave", "Chave PIX (número, e-mail...)"],
-              ["pixCpf", "CPF do PIX"],
-              ["contato", "Contato (WhatsApp)"],
+              ["pixNome", "Nome do favorecido do PIX"],
             ] as const
           ).map(([campo, rotulo]) => (
             <div key={campo} className="space-y-1.5">
@@ -107,6 +104,50 @@ function Configuracoes() {
               />
             </div>
           ))}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="pixTipo">Tipo de chave PIX</Label>
+            <Select
+              value={config.pixTipo}
+              onValueChange={(v) =>
+                setEstado((s) => ({ ...s, config: { ...s.config, pixTipo: v as PixTipo } }))
+              }
+            >
+              <SelectTrigger id="pixTipo">
+                <SelectValue placeholder="Escolha o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                {PIX_TIPOS.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t === "ALEATORIA" ? "CHAVE ALEATÓRIA" : t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="pixChave">Chave PIX ({config.pixTipo})</Label>
+            <Input
+              id="pixChave"
+              inputMode={config.pixTipo === "EMAIL" ? "email" : "text"}
+              value={config.pixChave}
+              onChange={(e) =>
+                setEstado((s) => ({ ...s, config: { ...s.config, pixChave: e.target.value } }))
+              }
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="contato">Contato (WhatsApp)</Label>
+            <Input
+              id="contato"
+              value={config.contato}
+              onChange={(e) =>
+                setEstado((s) => ({ ...s, config: { ...s.config, contato: e.target.value } }))
+              }
+            />
+          </div>
         </Card>
 
         <Card className="gap-3 p-4 shadow-card">
