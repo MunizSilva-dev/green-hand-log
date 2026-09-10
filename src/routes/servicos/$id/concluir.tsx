@@ -169,26 +169,79 @@ function Concluir() {
         <p className="text-xs text-muted-foreground">Total: {moeda(valorNumero)}</p>
       </section>
 
-      <section className="mt-6 space-y-2">
-        <h3 className="text-sm font-semibold">Equipe do serviço</h3>
-        <p className="text-xs text-muted-foreground">
-          {ajudantesSel.length === 0
-            ? "Somente você realizou este serviço."
-            : `Você + ${ajudantesSel.length} ajudante(s).`}
-        </p>
+      <section className="mt-10 space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-sm font-semibold">Despesas do serviço</h3>
+          <p className="text-xs text-muted-foreground">
+            Combustível, produtos ou qualquer custo. Entra no relatório em PDF.
+          </p>
+        </div>
+        <div className="space-y-3">
+          {despesas.map((d, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Input
+                placeholder="Descrição"
+                value={d.descricao}
+                onChange={(e) =>
+                  setDespesas((p) => p.map((x, j) => (j === i ? { ...x, descricao: e.target.value } : x)))
+                }
+              />
+              <Input
+                className="w-28"
+                inputMode="decimal"
+                placeholder="0,00"
+                value={d.valor ? String(d.valor) : ""}
+                onChange={(e) =>
+                  setDespesas((p) =>
+                    p.map((x, j) =>
+                      j === i ? { ...x, valor: Number(e.target.value.replace(",", ".")) || 0 } : x,
+                    ),
+                  )
+                }
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
+                aria-label="Remover despesa"
+                onClick={() => setDespesas((p) => p.filter((_, j) => j !== i))}
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <Button
+          variant="outline"
+          className="rounded-full"
+          onClick={() => setDespesas((p) => [...p, { descricao: "", valor: 0 }])}
+        >
+          <Plus className="size-4" /> Adicionar despesa
+        </Button>
+      </section>
+
+      <section className="mt-10 space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-sm font-semibold">Equipe do serviço</h3>
+          <p className="text-xs text-muted-foreground">
+            {ajudantesSel.length === 0
+              ? "Somente você realizou este serviço."
+              : `Você + ${ajudantesSel.length} ajudante(s).`}
+          </p>
+        </div>
         {equipe.length === 0 ? (
           <p className="text-xs text-muted-foreground">
             Nenhum ajudante cadastrado — cadastre em Configurações › Equipe.
           </p>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {equipe.map((a) => (
               <button
                 key={a.id}
                 type="button"
                 onClick={() => alternar(ajudantesSel, setAjudantesSel, a.id)}
                 className={cn(
-                  "rounded-full border border-border px-3 py-1.5 text-xs",
+                  "rounded-full border border-border px-4 py-2 text-xs",
                   ajudantesSel.includes(a.id) ? "bg-primary text-primary-foreground" : "bg-card",
                 )}
               >
@@ -199,7 +252,7 @@ function Concluir() {
         )}
       </section>
 
-      <section className="mt-6 space-y-2">
+      <section className="mt-10 space-y-2">
         <h3 className="text-sm font-semibold">Serviços adicionais</h3>
         <div className="flex flex-wrap gap-2">
           {EXTRAS.map((e) => (
