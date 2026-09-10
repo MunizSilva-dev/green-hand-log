@@ -131,9 +131,11 @@ const inicial: Estado = {
     profissionalNome: "",
     profissionalCpf: "",
     pixNome: "",
+    pixTipo: "CPF",
     pixChave: "",
     pixCpf: "",
     contato: "",
+    cookiesAceitos: false,
   },
 };
 
@@ -242,6 +244,7 @@ export function salvarServico(s: Partial<Servico> & { id?: string }) {
       criadoEm: new Date().toISOString(),
       ...s,
       valor: s.valor ?? 0,
+      despesas: s.despesas ?? [],
       ajudantes: s.ajudantes ?? [],
     };
     return { ...e, servicos: [...e.servicos, novo] };
