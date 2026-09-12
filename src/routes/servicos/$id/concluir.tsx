@@ -113,10 +113,10 @@ function Formulario({ servico }: { servico: Servico }) {
 
   function finalizar() {
     const atualizado = {
-      id: servico!.id,
+      id: servico.id,
       status: "concluido" as const,
-      inicioReal: `${servico!.data}T${inicio}:00`,
-      fimReal: `${servico!.data}T${fim}:00`,
+      inicioReal: `${servico.data}T${inicio}:00`,
+      fimReal: `${servico.data}T${fim}:00`,
       valor: valorNumero,
       ajudantes: ajudantesSel,
       despesas: despesas.filter((d) => d.descricao || d.valor),
@@ -130,7 +130,7 @@ function Formulario({ servico }: { servico: Servico }) {
     salvarServico(atualizado);
     notificar("Serviço concluído", `${cliente?.nome ?? "Cliente"} · ${minutosParaTexto(minutos)}`);
     toast.success("Serviço concluído");
-    const completo = { ...servico!, ...atualizado } as Servico;
+    const completo = { ...servico, ...atualizado } as Servico;
     setServicoFinal(completo);
     setMensagem(montarRecibo({ servico: completo, cliente, config }));
     gerarCobrancaPdf({ servico: completo, cliente, config });
