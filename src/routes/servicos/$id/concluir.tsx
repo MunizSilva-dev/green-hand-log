@@ -55,9 +55,24 @@ function agora() {
 
 function Concluir() {
   const { id } = useParams({ from: "/servicos/$id/concluir" });
-  const { servicos, clientes, ajudantes: equipe, config } = useEstado();
-  const navigate = useNavigate();
+  const { servicos } = useEstado();
   const servico = servicos.find((s) => s.id === id);
+
+  if (!servico) {
+    return (
+      <AppShell titulo="Concluir serviço">
+        <p className="text-sm">Serviço não encontrado.</p>
+      </AppShell>
+    );
+  }
+  // key garante que o formulário só inicialize depois que os dados do
+  // aparelho forem carregados (evita campos vazios na primeira renderização).
+  return <Formulario key={servico.id} servico={servico} />;
+}
+
+function Formulario({ servico }: { servico: Servico }) {
+  const { clientes, ajudantes: equipe, config } = useEstado();
+  const navigate = useNavigate();
 
   const [inicio, setInicio] = useState(
     servico?.inicioReal ? new Date(servico.inicioReal).toTimeString().slice(0, 5) : servico?.hora ?? "08:00",
@@ -74,14 +89,6 @@ function Concluir() {
   const [despesas, setDespesas] = useState<Despesa[]>(servico?.despesas ?? []);
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [servicoFinal, setServicoFinal] = useState<Servico | null>(null);
-
-  if (!servico) {
-    return (
-      <AppShell titulo="Concluir serviço">
-        <p className="text-sm">Serviço não encontrado.</p>
-      </AppShell>
-    );
-  }
 
   const cliente = clientes.find((c) => c.id === servico.clienteId);
   const minutos = Math.max(
@@ -106,10 +113,10 @@ function Concluir() {
 
   function finalizar() {
     const atualizado = {
-      id: servico!.id,
+      id: servico.id,
       status: "concluido" as const,
-      inicioReal: `${servico!.data}T${inicio}:00`,
-      fimReal: `${servico!.data}T${fim}:00`,
+      inicioReal: `${servico.data}T${inicio}:00`,
+      fimReal: `${servico.data}T${fim}:00`,
       valor: valorNumero,
       ajudantes: ajudantesSel,
       despesas: despesas.filter((d) => d.descricao || d.valor),
@@ -123,7 +130,7 @@ function Concluir() {
     salvarServico(atualizado);
     notificar("Serviço concluído", `${cliente?.nome ?? "Cliente"} · ${minutosParaTexto(minutos)}`);
     toast.success("Serviço concluído");
-    const completo = { ...servico!, ...atualizado } as Servico;
+    const completo = { ...servico, ...atualizado } as Servico;
     setServicoFinal(completo);
     setMensagem(montarRecibo({ servico: completo, cliente, config }));
     gerarCobrancaPdf({ servico: completo, cliente, config });

@@ -7,7 +7,21 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { exportarDados, importarDados, setEstado, useEstado } from "@/lib/store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  PIX_TIPOS,
+  exportarDados,
+  importarDados,
+  setEstado,
+  useEstado,
+  type PixTipo,
+} from "@/lib/store";
 import { pedirPermissao } from "@/lib/notificacoes";
 
 export const Route = createFileRoute("/configuracoes")({
@@ -26,11 +40,29 @@ function Configuracoes() {
   const { config } = useEstado();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function exportar() {
-    const blob = new Blob([exportarDados()], { type: "application/json" });
+  async function exportar() {
+    const conteudo = exportarDados();
+    const nome = `the-garden-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    const picker = (window as unknown as { showDirectoryPicker?: () => Promise<any> })
+      .showDirectoryPicker;
+    if (picker) {
+      try {
+        const raiz = await picker.call(window);
+        const pasta = await raiz.getDirectoryHandle("the-garden-aplication", { create: true });
+        const arquivo = await pasta.getFileHandle(nome, { create: true });
+        const escrita = await arquivo.createWritable();
+        await escrita.write(conteudo);
+        await escrita.close();
+        toast.success("Backup salvo na pasta the-garden-aplication");
+        return;
+      } catch {
+        /* usuário cancelou ou navegador não permitiu — cai no download comum */
+      }
+    }
+    const blob = new Blob([conteudo], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `the-garden-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = nome;
     a.click();
     URL.revokeObjectURL(a.href);
     toast.success("Backup exportado");
@@ -166,7 +198,7 @@ function Configuracoes() {
             Seus dados ficam salvos no próprio aparelho. Exporte um backup com frequência; a
             sincronização com servidor está preparada para ser ativada no futuro.
           </p>
-          <Button className="rounded-full" onClick={exportar}>
+          <Button className="rounded-full" onClick={() => void exportar()}>
             Exportar dados
           </Button>
           <Button variant="outline" className="rounded-full" onClick={() => inputRef.current?.click()}>

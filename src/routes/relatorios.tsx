@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { FileDown } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { minutosParaTexto, useEstado } from "@/lib/store";
+import { minutosParaTexto, moeda, useEstado } from "@/lib/store";
+import { gerarRelatorioPdf } from "@/lib/pdf";
 
 export const Route = createFileRoute("/relatorios")({
   head: () => ({
@@ -30,8 +33,15 @@ function Barra({ label, valor, max }: { label: string; valor: string; max: numbe
 }
 
 function Relatorios() {
-  const { servicos, clientes } = useEstado();
-  const concluidos = servicos.filter((s) => s.status === "concluido");
+  const { servicos, clientes, config } = useEstado();
+  const concluidos = servicos
+    .filter((s) => s.status === "concluido")
+    .sort((a, b) => a.data.localeCompare(b.data));
+  const totalRecebido = concluidos.reduce((a, s) => a + (s.valor || 0), 0);
+  const totalDespesas = concluidos.reduce(
+    (a, s) => a + (s.despesas ?? []).reduce((x, d) => x + (d.valor || 0), 0),
+    0,
+  );
   const nome = (id: string) => clientes.find((c) => c.id === id)?.nome ?? "Cliente";
 
   const porMes = new Map<string, number>();
@@ -70,6 +80,40 @@ function Relatorios() {
   return (
     <AppShell titulo="Relatórios">
       <div className="space-y-3">
+        <Card className="gap-3 p-4 shadow-card">
+          <h3 className="text-sm font-semibold">Resumo financeiro</h3>
+          <p className="flex justify-between text-sm">
+            <span>Serviços concluídos</span>
+            <span className="text-muted-foreground">{concluidos.length}</span>
+          </p>
+          <p className="flex justify-between text-sm">
+            <span>Total recebido</span>
+            <span className="text-muted-foreground">{moeda(totalRecebido)}</span>
+          </p>
+          <p className="flex justify-between text-sm">
+            <span>Despesas</span>
+            <span className="text-muted-foreground">{moeda(totalDespesas)}</span>
+          </p>
+          <p className="flex justify-between text-sm font-semibold text-primary">
+            <span>Lucro</span>
+            <span>{moeda(totalRecebido - totalDespesas)}</span>
+          </p>
+          <Button
+            className="mt-2 rounded-full"
+            disabled={concluidos.length === 0}
+            onClick={() =>
+              gerarRelatorioPdf({
+                servicos: concluidos,
+                clientes,
+                config,
+                periodo: "todos os serviços",
+              })
+            }
+          >
+            <FileDown className="size-4" /> Baixar relatório em PDF
+          </Button>
+        </Card>
+
         {secao(
           "Serviços por mês",
           porMes.size === 0
