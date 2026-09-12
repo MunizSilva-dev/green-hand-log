@@ -40,11 +40,29 @@ function Configuracoes() {
   const { config } = useEstado();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function exportar() {
-    const blob = new Blob([exportarDados()], { type: "application/json" });
+  async function exportar() {
+    const conteudo = exportarDados();
+    const nome = `the-garden-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    const picker = (window as unknown as { showDirectoryPicker?: () => Promise<any> })
+      .showDirectoryPicker;
+    if (picker) {
+      try {
+        const raiz = await picker.call(window);
+        const pasta = await raiz.getDirectoryHandle("the-garden-aplication", { create: true });
+        const arquivo = await pasta.getFileHandle(nome, { create: true });
+        const escrita = await arquivo.createWritable();
+        await escrita.write(conteudo);
+        await escrita.close();
+        toast.success("Backup salvo na pasta the-garden-aplication");
+        return;
+      } catch {
+        /* usuário cancelou ou navegador não permitiu — cai no download comum */
+      }
+    }
+    const blob = new Blob([conteudo], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `the-garden-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = nome;
     a.click();
     URL.revokeObjectURL(a.href);
     toast.success("Backup exportado");
