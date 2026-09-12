@@ -90,14 +90,6 @@ function Formulario({ servico }: { servico: Servico }) {
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [servicoFinal, setServicoFinal] = useState<Servico | null>(null);
 
-  if (!servico) {
-    return (
-      <AppShell titulo="Concluir serviço">
-        <p className="text-sm">Serviço não encontrado.</p>
-      </AppShell>
-    );
-  }
-
   const cliente = clientes.find((c) => c.id === servico.clienteId);
   const minutos = Math.max(
     0,
