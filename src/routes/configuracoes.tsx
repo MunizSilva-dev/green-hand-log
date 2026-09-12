@@ -198,7 +198,7 @@ function Configuracoes() {
             Seus dados ficam salvos no próprio aparelho. Exporte um backup com frequência; a
             sincronização com servidor está preparada para ser ativada no futuro.
           </p>
-          <Button className="rounded-full" onClick={exportar}>
+          <Button className="rounded-full" onClick={() => void exportar()}>
             Exportar dados
           </Button>
           <Button variant="outline" className="rounded-full" onClick={() => inputRef.current?.click()}>
