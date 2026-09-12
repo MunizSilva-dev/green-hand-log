@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { FileDown } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { minutosParaTexto, useEstado } from "@/lib/store";
+import { minutosParaTexto, moeda, useEstado } from "@/lib/store";
+import { gerarRelatorioPdf } from "@/lib/pdf";
 
 export const Route = createFileRoute("/relatorios")({
   head: () => ({
