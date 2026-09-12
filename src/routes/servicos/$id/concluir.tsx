@@ -55,9 +55,24 @@ function agora() {
 
 function Concluir() {
   const { id } = useParams({ from: "/servicos/$id/concluir" });
-  const { servicos, clientes, ajudantes: equipe, config } = useEstado();
-  const navigate = useNavigate();
+  const { servicos } = useEstado();
   const servico = servicos.find((s) => s.id === id);
+
+  if (!servico) {
+    return (
+      <AppShell titulo="Concluir serviço">
+        <p className="text-sm">Serviço não encontrado.</p>
+      </AppShell>
+    );
+  }
+  // key garante que o formulário só inicialize depois que os dados do
+  // aparelho forem carregados (evita campos vazios na primeira renderização).
+  return <Formulario key={servico.id} servico={servico} />;
+}
+
+function Formulario({ servico }: { servico: Servico }) {
+  const { clientes, ajudantes: equipe, config } = useEstado();
+  const navigate = useNavigate();
 
   const [inicio, setInicio] = useState(
     servico?.inicioReal ? new Date(servico.inicioReal).toTimeString().slice(0, 5) : servico?.hora ?? "08:00",
