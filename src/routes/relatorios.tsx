@@ -33,8 +33,15 @@ function Barra({ label, valor, max }: { label: string; valor: string; max: numbe
 }
 
 function Relatorios() {
-  const { servicos, clientes } = useEstado();
-  const concluidos = servicos.filter((s) => s.status === "concluido");
+  const { servicos, clientes, config } = useEstado();
+  const concluidos = servicos
+    .filter((s) => s.status === "concluido")
+    .sort((a, b) => a.data.localeCompare(b.data));
+  const totalRecebido = concluidos.reduce((a, s) => a + (s.valor || 0), 0);
+  const totalDespesas = concluidos.reduce(
+    (a, s) => a + (s.despesas ?? []).reduce((x, d) => x + (d.valor || 0), 0),
+    0,
+  );
   const nome = (id: string) => clientes.find((c) => c.id === id)?.nome ?? "Cliente";
 
   const porMes = new Map<string, number>();
