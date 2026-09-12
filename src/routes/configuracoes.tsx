@@ -7,7 +7,21 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { exportarDados, importarDados, setEstado, useEstado } from "@/lib/store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  PIX_TIPOS,
+  exportarDados,
+  importarDados,
+  setEstado,
+  useEstado,
+  type PixTipo,
+} from "@/lib/store";
 import { pedirPermissao } from "@/lib/notificacoes";
 
 export const Route = createFileRoute("/configuracoes")({
