@@ -80,6 +80,40 @@ function Relatorios() {
   return (
     <AppShell titulo="Relatórios">
       <div className="space-y-3">
+        <Card className="gap-3 p-4 shadow-card">
+          <h3 className="text-sm font-semibold">Resumo financeiro</h3>
+          <p className="flex justify-between text-sm">
+            <span>Serviços concluídos</span>
+            <span className="text-muted-foreground">{concluidos.length}</span>
+          </p>
+          <p className="flex justify-between text-sm">
+            <span>Total recebido</span>
+            <span className="text-muted-foreground">{moeda(totalRecebido)}</span>
+          </p>
+          <p className="flex justify-between text-sm">
+            <span>Despesas</span>
+            <span className="text-muted-foreground">{moeda(totalDespesas)}</span>
+          </p>
+          <p className="flex justify-between text-sm font-semibold text-primary">
+            <span>Lucro</span>
+            <span>{moeda(totalRecebido - totalDespesas)}</span>
+          </p>
+          <Button
+            className="mt-2 rounded-full"
+            disabled={concluidos.length === 0}
+            onClick={() =>
+              gerarRelatorioPdf({
+                servicos: concluidos,
+                clientes,
+                config,
+                periodo: "todos os serviços",
+              })
+            }
+          >
+            <FileDown className="size-4" /> Baixar relatório em PDF
+          </Button>
+        </Card>
+
         {secao(
           "Serviços por mês",
           porMes.size === 0
