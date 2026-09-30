@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Rodape } from "@/components/AppShell";
-import { hash, setEstado, useEstado } from "@/lib/store";
+import { criarConta, entrar, redefinirSenha, useEstado } from "@/lib/store";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
