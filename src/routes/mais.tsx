@@ -3,7 +3,7 @@ import { BarChart3, LogOut, Settings, CalendarDays, Users2 } from "lucide-react"
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { setEstado, useEstado } from "@/lib/store";
+import { sair, useEstado } from "@/lib/store";
 
 export const Route = createFileRoute("/mais")({
   head: () => ({
@@ -52,7 +52,7 @@ function Mais() {
         variant="outline"
         className="mt-6 w-full rounded-full"
         onClick={() => {
-          setEstado((e) => ({ ...e, sessaoAtiva: false }));
+          sair();
           navigate({ to: "/login" });
         }}
       >
