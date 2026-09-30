@@ -35,16 +35,15 @@ function Login() {
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (modo === "recuperar") {
-      if (!estado.usuario || estado.usuario.email !== email) {
-        toast.error("E-mail não encontrado neste dispositivo");
-        return;
-      }
       if (senha.length < 6) {
         toast.error("A nova senha precisa de 6 caracteres");
         return;
       }
-      const senhaHash = await hash(senha);
-      setEstado((s) => ({ ...s, usuario: { ...s.usuario!, senhaHash } }));
+      if (!window.confirm("Seus dados são protegidos pela senha antiga. Redefinir apaga os dados deste aparelho (use um backup para restaurar). Continuar?")) return;
+      if (!(await redefinirSenha(email, senha))) {
+        toast.error("E-mail não encontrado neste dispositivo");
+        return;
+      }
       toast.success("Senha redefinida");
       setModo("login");
       return;
@@ -55,20 +54,21 @@ function Login() {
         toast.error("Preencha nome, e-mail e senha (mín. 6 caracteres)");
         return;
       }
-      const senhaHash = await hash(senha);
-      setEstado((s) => ({ ...s, usuario: { nome, email, senhaHash }, sessaoAtiva: true }));
+      await criarConta(nome, email, senha);
       toast.success(`Bem-vindo, ${nome}!`);
       navigate({ to: "/" });
       return;
     }
 
-    const senhaHash = await hash(senha);
-    if (!estado.usuario || estado.usuario.email !== email || estado.usuario.senhaHash !== senhaHash) {
-      toast.error("E-mail ou senha incorretos");
+    try {
+      if (!(await entrar(email, senha, manter))) {
+        toast.error("E-mail ou senha incorretos");
+        return;
+      }
+    } catch {
+      toast.error("Não foi possível abrir os dados protegidos");
       return;
     }
-    setEstado((s) => ({ ...s, sessaoAtiva: manter }));
-    if (!manter) setEstado((s) => ({ ...s, sessaoAtiva: true }));
     navigate({ to: "/" });
   }
 
