@@ -419,8 +419,8 @@ export function exportarDados() {
 }
 
 export function importarDados(json: string) {
-  const dados = JSON.parse(json) as Estado;
-  setEstado(() => ({ ...inicial, ...dados }));
+  const dados = JSON.parse(json) as Partial<Estado>;
+  setEstado((e) => ({ ...mesclar(dados), usuario: e.usuario, sessaoAtiva: e.sessaoAtiva }));
 }
 
 export const hoje = () => new Date().toISOString().slice(0, 10);

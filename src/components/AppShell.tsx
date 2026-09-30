@@ -1,7 +1,7 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { Home, CalendarDays, Users, Leaf, MoreHorizontal } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { useEstado } from "@/lib/store";
+import { iniciar, useEstado } from "@/lib/store";
 import { verificarNotificacoes } from "@/lib/notificacoes";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +41,9 @@ export function AppShell({ titulo, acao, children }: { titulo: string; acao?: Re
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   // Evita redirecionar antes da hidratação (os dados vivem no dispositivo).
   const [pronto, setPronto] = useState(false);
-  useEffect(() => setPronto(true), []);
+  useEffect(() => {
+    void iniciar().then(() => setPronto(true));
+  }, []);
 
   useEffect(() => {
     if (pronto && !estado.sessaoAtiva) router.navigate({ to: "/login" });
