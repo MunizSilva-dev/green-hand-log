@@ -155,8 +155,15 @@ let fila: Promise<void> = Promise.resolve();
 const ouvintes = new Set<() => void>();
 
 // ---------- Criptografia ----------
-const b64 = (b: ArrayBuffer | Uint8Array) =>
-  btoa(String.fromCharCode(...new Uint8Array(b instanceof Uint8Array ? b : new Uint8Array(b))));
+// Converte em blocos: com fotos os dados ficam grandes e o "spread" estourava a memória no celular.
+const b64 = (b: ArrayBuffer | Uint8Array) => {
+  const bytes = b instanceof Uint8Array ? b : new Uint8Array(b);
+  let s = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(s);
+};
 const deB64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 
 async function derivarChave(senha: string, salt: string) {
